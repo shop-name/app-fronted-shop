@@ -14,7 +14,7 @@
           offset-x="12"
           offset-y="12"
         >
-          <v-btn icon variant="text" size="large">
+          <v-btn icon variant="text" size="large" disabled title="カートページは準備中です">
             <v-icon size="28">mdi-cart-outline</v-icon>
           </v-btn>
         </v-badge>

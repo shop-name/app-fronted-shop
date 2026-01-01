@@ -33,6 +33,7 @@
 <script setup lang="ts">
 import type { Product } from '~/data/products'
 import { useCartStore } from '~/stores/cartStore'
+import { SUCCESS_MESSAGES } from '~/constants/messages'
 
 const props = defineProps<{
   product: Product
@@ -47,7 +48,7 @@ const addToCart = () => {
   const result = cartStore.addToCart(props.product.id)
 
   if (result.success) {
-    snackbarMessage.value = 'カートに追加しました'
+    snackbarMessage.value = SUCCESS_MESSAGES.ADDED_TO_CART
     snackbarColor.value = 'success'
     snackbar.value = true
   } else {

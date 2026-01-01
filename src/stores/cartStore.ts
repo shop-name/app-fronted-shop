@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 import { useProductStore } from './productStore'
+import type { ActionResult } from '~/types/common'
+import { ERROR_MESSAGES } from '~/constants/messages'
 
 export interface CartItem {
   productId: number
@@ -24,7 +26,7 @@ export const useCartStore = defineStore('cart', {
   },
 
   actions: {
-    addToCart(productId: number, quantity: number = 1): { success: boolean; message?: string } {
+    addToCart(productId: number, quantity: number = 1): ActionResult {
       try {
         this.error = null
 
@@ -34,14 +36,14 @@ export const useCartStore = defineStore('cart', {
 
         // 商品が存在しない場合
         if (!product) {
-          this.error = '商品が見つかりません'
-          return { success: false, message: '商品が見つかりません' }
+          this.error = ERROR_MESSAGES.PRODUCT_NOT_FOUND
+          return { success: false, message: ERROR_MESSAGES.PRODUCT_NOT_FOUND }
         }
 
         // 在庫チェック
         if (product.stock === 0) {
-          this.error = 'この商品は売り切れです'
-          return { success: false, message: 'この商品は売り切れです' }
+          this.error = ERROR_MESSAGES.OUT_OF_STOCK
+          return { success: false, message: ERROR_MESSAGES.OUT_OF_STOCK }
         }
 
         const existingItem = this.items.find(item => item.productId === productId)
@@ -50,11 +52,9 @@ export const useCartStore = defineStore('cart', {
 
         // 在庫数を超えていないかチェック
         if (newQuantity > product.stock) {
-          this.error = `在庫が不足しています（在庫数: ${product.stock}）`
-          return {
-            success: false,
-            message: `在庫が不足しています（在庫数: ${product.stock}）`
-          }
+          const errorMessage = ERROR_MESSAGES.INSUFFICIENT_STOCK(product.stock)
+          this.error = errorMessage
+          return { success: false, message: errorMessage }
         }
 
         // カートに追加
@@ -67,10 +67,9 @@ export const useCartStore = defineStore('cart', {
         this.saveToStorage()
         return { success: true }
       } catch (error) {
-        const errorMessage = 'カートへの追加に失敗しました'
-        this.error = errorMessage
+        this.error = ERROR_MESSAGES.ADD_TO_CART_FAILED
         console.error('Error adding to cart:', error)
-        return { success: false, message: errorMessage }
+        return { success: false, message: ERROR_MESSAGES.ADD_TO_CART_FAILED }
       }
     },
 
@@ -82,7 +81,7 @@ export const useCartStore = defineStore('cart', {
       }
     },
 
-    updateQuantity(productId: number, quantity: number): { success: boolean; message?: string } {
+    updateQuantity(productId: number, quantity: number): ActionResult {
       try {
         this.error = null
 
@@ -97,17 +96,15 @@ export const useCartStore = defineStore('cart', {
 
         // 商品が存在しない場合
         if (!product) {
-          this.error = '商品が見つかりません'
-          return { success: false, message: '商品が見つかりません' }
+          this.error = ERROR_MESSAGES.PRODUCT_NOT_FOUND
+          return { success: false, message: ERROR_MESSAGES.PRODUCT_NOT_FOUND }
         }
 
         // 在庫チェック
         if (quantity > product.stock) {
-          this.error = `在庫が不足しています（在庫数: ${product.stock}）`
-          return {
-            success: false,
-            message: `在庫が不足しています（在庫数: ${product.stock}）`
-          }
+          const errorMessage = ERROR_MESSAGES.INSUFFICIENT_STOCK(product.stock)
+          this.error = errorMessage
+          return { success: false, message: errorMessage }
         }
 
         const item = this.items.find(item => item.productId === productId)
@@ -117,12 +114,11 @@ export const useCartStore = defineStore('cart', {
           return { success: true }
         }
 
-        return { success: false, message: 'カート内に商品が見つかりません' }
+        return { success: false, message: ERROR_MESSAGES.CART_ITEM_NOT_FOUND }
       } catch (error) {
-        const errorMessage = '数量の更新に失敗しました'
-        this.error = errorMessage
+        this.error = ERROR_MESSAGES.UPDATE_QUANTITY_FAILED
         console.error('Error updating quantity:', error)
-        return { success: false, message: errorMessage }
+        return { success: false, message: ERROR_MESSAGES.UPDATE_QUANTITY_FAILED }
       }
     },
 

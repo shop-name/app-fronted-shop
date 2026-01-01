@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import type { Product } from '~/data/products'
 import { mockProducts } from '~/data/products'
+import { ERROR_MESSAGES } from '~/constants/messages'
 
 export const useProductStore = defineStore('product', {
   state: () => ({
@@ -37,7 +38,7 @@ export const useProductStore = defineStore('product', {
         await new Promise(resolve => setTimeout(resolve, 300))
         this.products = mockProducts
       } catch (error) {
-        this.error = '商品の取得に失敗しました'
+        this.error = ERROR_MESSAGES.PRODUCT_FETCH_FAILED
         console.error('Error fetching products:', error)
       } finally {
         this.loading = false
