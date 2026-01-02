@@ -37,6 +37,16 @@
         color="primary"
       />
     </div>
+
+    <!-- 注文完了通知 -->
+    <v-snackbar
+      v-model="snackbar"
+      color="success"
+      :timeout="4000"
+      location="top"
+    >
+      {{ snackbarMessage }}
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -44,9 +54,14 @@
 import { useProductStore } from '~/stores/productStore'
 
 const productStore = useProductStore()
+const route = useRoute()
+const router = useRouter()
 
 const currentPage = ref(1)
 const itemsPerPage = 8
+
+const snackbar = ref(false)
+const snackbarMessage = ref('')
 
 const totalPages = computed(() => {
   return Math.ceil(productStore.products.length / itemsPerPage)
@@ -60,6 +75,15 @@ const paginatedProducts = computed(() => {
 
 onMounted(async () => {
   await productStore.fetchProducts()
+
+  // 注文完了パラメータをチェック
+  if (route.query.orderCompleted === 'true') {
+    snackbarMessage.value = 'ご注文ありがとうございます！注文が確定しました。'
+    snackbar.value = true
+
+    // URLからクエリパラメータを削除（リロード時に再表示されないように）
+    router.replace('/')
+  }
 })
 
 useSeoMeta({

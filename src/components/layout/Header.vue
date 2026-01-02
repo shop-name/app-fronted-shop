@@ -1,10 +1,12 @@
 <template>
   <v-app-bar elevation="1">
     <div class="header-container">
-      <div class="d-flex">
-        <v-icon size="32" color="primary" class="mr-2">mdi-store</v-icon>
-        <span class="text-h6 font-weight-bold">ShopName</span>
-      </div>
+      <NuxtLink to="/" class="logo-link">
+        <div class="d-flex align-center">
+          <v-icon size="32" color="primary" class="mr-2">mdi-store</v-icon>
+          <span class="text-h6 font-weight-bold">ShopName</span>
+        </div>
+      </NuxtLink>
 
       <div class="d-flex align-center justify-end">
         <v-badge
@@ -14,7 +16,14 @@
           offset-x="12"
           offset-y="12"
         >
-          <v-btn icon variant="text" size="large" disabled title="カートページは準備中です">
+          <v-btn
+            icon
+            variant="text"
+            size="large"
+            to="/cart"
+            :active="false"
+            title="カートを見る"
+          >
             <v-icon size="28">mdi-cart-outline</v-icon>
           </v-btn>
         </v-badge>
@@ -42,5 +51,15 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   height: 100%;
+}
+
+.logo-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
 }
 </style>

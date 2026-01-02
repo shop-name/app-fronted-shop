@@ -11,5 +11,6 @@
 <style scoped>
 .main-content {
   min-height: calc(100vh - 70px - 50px);
+  background-color: #F0F4F8;
 }
 </style>

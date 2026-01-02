@@ -1,6 +1,6 @@
 <template>
   <v-card class="product-card" elevation="2">
-    <v-img :src="product.image" height="250" cover></v-img>
+    <v-img :src="product.image" :alt="product.name" height="250" cover></v-img>
 
     <v-card-text class="product-info">
       <div class="product-brand">{{ product.brand }}</div>

@@ -6,9 +6,9 @@
       </div>
 
       <div class="footer-links">
-        <span class="footer-link">プライバシーポリシー</span>
-        <span class="footer-link">特定商取引法に基づく表記</span>
-        <span class="footer-link">お問い合わせ</span>
+        <a href="/privacy" class="footer-link">プライバシーポリシー</a>
+        <a href="/terms" class="footer-link">特定商取引法に基づく表記</a>
+        <a href="/contact" class="footer-link">お問い合わせ</a>
       </div>
     </div>
   </v-footer>
@@ -37,5 +37,18 @@
 .footer-links {
   display: flex;
   gap: 32px;
+}
+
+.footer-link {
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #1976d2;
+    text-decoration: underline;
+  }
 }
 </style>
