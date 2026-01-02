@@ -1,50 +1,117 @@
 <template>
-  <div class="container">
-    <h1>Welcome to Your Shop</h1>
-    <p>This is the home page</p>
-    <nav>
-      <NuxtLink to="/about">About</NuxtLink>
-      <NuxtLink to="/products">Products</NuxtLink>
-    </nav>
-  </div>
+  <v-container class="product-list-page">
+    <div class="page-header">
+      <h1 class="page-title">商品一覧</h1>
+      <p class="page-subtitle">今シーズンの最新トレンドアイテムをチェック</p>
+    </div>
+
+    <div v-if="productStore.loading" class="loading-container">
+      <v-progress-circular indeterminate color="primary" size="64" />
+    </div>
+
+    <v-alert v-else-if="productStore.error" type="error" class="mb-4">
+      {{ productStore.error }}
+    </v-alert>
+
+    <v-row v-else>
+      <v-col
+        v-for="product in paginatedProducts"
+        :key="product.id"
+        cols="12"
+        sm="6"
+        md="4"
+        lg="3"
+      >
+        <ProductCard :product="product" />
+      </v-col>
+    </v-row>
+
+    <div
+      v-if="!productStore.loading && !productStore.error"
+      class="pagination-container"
+    >
+      <v-pagination
+        v-model="currentPage"
+        :length="totalPages"
+        :total-visible="7"
+        color="primary"
+      />
+    </div>
+
+    <!-- 注文完了通知 -->
+    <v-snackbar
+      v-model="snackbar"
+      color="success"
+      :timeout="4000"
+      location="top"
+    >
+      {{ snackbarMessage }}
+    </v-snackbar>
+  </v-container>
 </template>
 
 <script setup lang="ts">
-const title = ref<string>('Shop Home')
+import { useProductStore } from '~/stores/productStore'
+
+const productStore = useProductStore()
+const route = useRoute()
+const router = useRouter()
+
+const currentPage = ref(1)
+const itemsPerPage = 8
+
+const snackbar = ref(false)
+const snackbarMessage = ref('')
+
+const totalPages = computed(() => {
+  return Math.ceil(productStore.products.length / itemsPerPage)
+})
+
+const paginatedProducts = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return productStore.products.slice(start, end)
+})
+
+onMounted(async () => {
+  await productStore.fetchProducts()
+
+  // 注文完了パラメータをチェック
+  if (route.query.orderCompleted === 'true') {
+    snackbarMessage.value = 'ご注文ありがとうございます！注文が確定しました。'
+    snackbar.value = true
+
+    // URLからクエリパラメータを削除（リロード時に再表示されないように）
+    router.replace('/')
+  }
+})
 
 useSeoMeta({
-  title: title.value,
-  description: 'Welcome to our shop',
+  title: '商品一覧 - ShopName',
+  description: '今シーズンの最新トレンドアイテムをチェック',
 })
 </script>
 
 <style scoped>
-.container {
-  padding: 2rem;
-  font-family: sans-serif;
+.product-list-page {
+  padding: 48px 5%;
+  max-width: 1400px;
 }
 
-h1 {
-  color: #00dc82;
-  margin-bottom: 1rem;
+.page-header {
+  margin-bottom: 48px;
 }
 
-nav {
-  margin-top: 2rem;
+.loading-container {
   display: flex;
-  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
 }
 
-nav a {
-  color: #00dc82;
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  border: 1px solid #00dc82;
-  border-radius: 4px;
-}
-
-nav a:hover {
-  background-color: #00dc82;
-  color: white;
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
 }
 </style>
