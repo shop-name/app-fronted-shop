@@ -6,9 +6,7 @@
 
 ## 🚀 デモURL
 
-<!-- デプロイ後にURLを追加 -->
-
-準備中...
+[https://app-fronted-shop.vercel.app](https://app-fronted-shop.vercel.app)
 
 ## 📋 概要
 
